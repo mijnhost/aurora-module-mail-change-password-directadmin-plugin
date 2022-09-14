@@ -1,0 +1,13 @@
+{
+	"Disabled": [
+		false,
+		"bool"
+	],
+	"SupportedServers": [
+		["*"],
+		"array"
+	],
+	"DirectAdminURL": [
+		"http://localhost:2222",
+		"string"
+}
