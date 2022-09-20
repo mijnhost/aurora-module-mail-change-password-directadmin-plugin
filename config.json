@@ -10,4 +10,5 @@
 	"DirectAdminURL": [
 		"http://localhost:2222",
 		"string"
+	]
 }
