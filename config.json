@@ -20,5 +20,9 @@
 	"DirectAdminURL": [
 		"http://localhost:2222",
 		"string"
+	],
+	"DirectAdminURL_Description": [
+		"Defines main URL of DirectAdmin installation",
+		"string"
 	]
 }
