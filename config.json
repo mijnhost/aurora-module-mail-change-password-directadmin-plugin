@@ -3,9 +3,19 @@
 		false,
 		"bool"
 	],
+	"Disabled_Description": [
+		"Setting to true disables the module",
+		"string"
+	],	
 	"SupportedServers": [
-		["*"],
+		[
+			"*"
+		],
 		"array"
+	],
+	"SupportedServers_Description": [
+		"If IMAP Server value of the mailserver is in this list, password change is enabled for it. * enables it for all the servers.",
+		"string"
 	],
 	"DirectAdminURL": [
 		"http://localhost:2222",
