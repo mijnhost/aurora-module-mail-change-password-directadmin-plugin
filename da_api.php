@@ -1,6 +1,6 @@
 <?php
 
-class DirectAdminAPI
+class DirectAdminPassAPI
 {
     private $da ;
     private $arg_names = array(

@@ -20,7 +20,7 @@ namespace Aurora\Modules\MailChangePasswordDirectadminPlugin;
 class Module extends \Aurora\System\Module\AbstractModule
 {
     /**
-     * @var \DirectAdminAPI
+     * @var \DirectAdminPassAPI
      */
     private $oDAApi;
 
@@ -30,7 +30,7 @@ class Module extends \Aurora\System\Module\AbstractModule
         $this->subscribeEvent('Mail::ChangeAccountPassword', array($this, 'onChangeAccountPassword'));
 
         require_once __DIR__.'/da_api.php';
-        $this->oDAApi = new \DirectAdminAPI($this->getConfig('DirectAdminURL', 'http://localhost:2222'));
+        $this->oDAApi = new \DirectAdminPassAPI($this->getConfig('DirectAdminURL', 'http://localhost:2222'));
     }
 
     /**
