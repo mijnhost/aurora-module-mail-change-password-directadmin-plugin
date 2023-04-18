@@ -32,6 +32,24 @@ class Module extends \Aurora\System\Module\AbstractModule
         require_once __DIR__.'/da_api.php';
         $this->oDAApi = new \DirectAdminPassAPI($this->getConfig('DirectAdminURL', 'http://localhost:2222'));
     }
+	
+    /**
+     *
+     * @return Module
+     */
+    public static function Decorator()
+    {
+        return parent::Decorator();
+    }
+
+    /**
+     *
+     * @return Settings
+     */
+    protected function GetModuleSettings()
+    {
+        return $this->oModuleSettings;
+    }
 
     /**
      * Adds to account response array information about if allowed to change the password for this account.
