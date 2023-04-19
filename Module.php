@@ -15,6 +15,8 @@ namespace Aurora\Modules\MailChangePasswordDirectadminPlugin;
  * @license https://afterlogic.com/products/common-licensing Afterlogic Software License
  * @copyright Copyright (c) 2023, Afterlogic Corp.
  *
+ * @property Settings $oModuleSettings
+ *
  * @package Modules
  */
 class Module extends \Aurora\System\Module\AbstractModule
@@ -30,7 +32,7 @@ class Module extends \Aurora\System\Module\AbstractModule
         $this->subscribeEvent('Mail::ChangeAccountPassword', array($this, 'onChangeAccountPassword'));
 
         require_once __DIR__.'/da_api.php';
-        $this->oDAApi = new \DirectAdminPassAPI($this->getConfig('DirectAdminURL', 'http://localhost:2222'));
+        $this->oDAApi = new \DirectAdminPassAPI($this->oModuleSettings->DirectAdminURL);
     }
 	
     /**
@@ -98,12 +100,12 @@ class Module extends \Aurora\System\Module\AbstractModule
      */
     protected function checkCanChangePassword($oAccount)
     {
-        $bFound = in_array('*', $this->getConfig('SupportedServers', array()));
+        $bFound = in_array('*', $this->oModuleSettings->SupportedServers);
 
         if (!$bFound) {
             $oServer = $oAccount->getServer();
 
-            if ($oServer && in_array($oServer->IncomingServer, $this->getConfig('SupportedServers'))) {
+            if ($oServer && in_array($oServer->IncomingServer, $this->oModuleSettings->SupportedServers)) {
                 $bFound = true;
             }
         }
