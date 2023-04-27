@@ -131,7 +131,7 @@ class Module extends \Aurora\System\Module\AbstractModule
         $bResult = false;
         $sPassCurr = $oAccount->getPassword();
         if (0 < strlen($sPassCurr) && $sPassCurr !== $sPassword) {
-            $bResult = $this->oDAApi->CMD_CHANGE_EMAIL_PASSWORD( // @phpstan-ignore-line
+            $bResult = $this->oDAApi->CMD_CHANGE_EMAIL_PASSWORD(
                 $oAccount->IncomingLogin,
                 $sPassCurr,
                 $sPassword,

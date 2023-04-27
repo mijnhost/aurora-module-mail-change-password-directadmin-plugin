@@ -1,5 +1,8 @@
 <?php
 
+/**
+* @method mixed CMD_CHANGE_EMAIL_PASSWORD(string $email, string $oldpassword, string $password1, string $password2)
+*/
 class DirectAdminPassAPI
 {
     private $da ;
@@ -71,6 +74,7 @@ class DirectAdminPassAPI
 
 
         $content_length = 0 ;
+        $data = '';
         if (is_array($argument['data']) && count($argument['data'])) {
             $pair = '' ;
             foreach ($argument['data'] as $index=>$value) {
@@ -83,9 +87,8 @@ class DirectAdminPassAPI
 
         $prefix = ($this->da['scheme'] == 'https') ? 'ssl://' : null;
 
-        if (!isset($error)) { // @phpstan-ignore-line
-            $error = array();
-        }
+        $error = array();
+
         $fp = @fsockopen($prefix.$this->da['host'], $this->da['port'], $error['number'], $error['string'], 10) ;
         if (! $fp) {
             return null ;
@@ -95,7 +98,7 @@ class DirectAdminPassAPI
         // TODO: Add authorization
 
         $http_header = array(
-            $method.' /'.$command.((!$post) ? '?'.$data : null).' HTTP/1.0', // @phpstan-ignore-line
+            $method.' /'.$command.((!$post) ? '?'.$data : '').' HTTP/1.0',
 //            'Authorization: Basic '.base64_encode($this->da['user'].':'.$this->da['pass']),
             'Host: '.$this->da['host'],
             'Content-Type: application/x-www-form-urlencoded',
@@ -104,7 +107,7 @@ class DirectAdminPassAPI
         ) ;
 
         $request = implode("\r\n", $http_header)."\r\n\r\n" ;
-        fwrite($fp, $request.(($post) ? $data : null)) ;  // @phpstan-ignore-line
+        fwrite($fp, $request.(($post) ? $data : '')) ;
 
         $returned = '' ;
         while ($line = @fread($fp, 1024)) {
