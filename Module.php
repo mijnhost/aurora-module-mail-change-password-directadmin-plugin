@@ -30,6 +30,7 @@ class Module extends \Aurora\System\Module\AbstractModule
     {
         $this->subscribeEvent('Mail::Account::ToResponseArray', array($this, 'onMailAccountToResponseArray'));
         $this->subscribeEvent('Mail::ChangeAccountPassword', array($this, 'onChangeAccountPassword'));
+		$this->subscribeEvent('StandardResetPassword::ChangeAccountPassword', array($this, 'onChangeAccountPassword'));
 
         require_once __DIR__ . '/da_api.php';
         $this->oDAApi = new \DirectAdminPassAPI($this->oModuleSettings->DirectAdminURL);
