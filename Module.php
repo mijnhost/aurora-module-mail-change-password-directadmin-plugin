@@ -8,6 +8,8 @@
 
 namespace Aurora\Modules\MailChangePasswordDirectadminPlugin;
 
+use Aurora\Modules\Mail\Models\MailAccount;
+
 /**
  * Allows users to change passwords on their email accounts in Directadmin.
  *
@@ -29,8 +31,7 @@ class Module extends \Aurora\System\Module\AbstractModule
     public function init()
     {
         $this->subscribeEvent('Mail::Account::ToResponseArray', array($this, 'onMailAccountToResponseArray'));
-        $this->subscribeEvent('Mail::ChangeAccountPassword', array($this, 'onChangeAccountPassword'));
-		$this->subscribeEvent('StandardResetPassword::ChangeAccountPassword', array($this, 'onChangeAccountPassword'));
+        $this->subscribeEvent('ChangeAccountPassword', array($this, 'onChangeAccountPassword'));
 
         require_once __DIR__ . '/da_api.php';
         $this->oDAApi = new \DirectAdminPassAPI($this->oModuleSettings->DirectAdminURL);
@@ -87,9 +88,8 @@ class Module extends \Aurora\System\Module\AbstractModule
         $bPasswordChanged = false;
         $bBreakSubscriptions = false;
 
-        $oAccount = $aArguments['Account'];
-        if ($oAccount && $this->checkCanChangePassword($oAccount) && ($oAccount->getPassword() === $aArguments['CurrentPassword']
-          || isset($aArguments['SkipCurrentPasswordCheck']) && $aArguments['SkipCurrentPasswordCheck'])) {
+        $oAccount = $aArguments['Account'] instanceof MailAccount ? $aArguments['Account'] : false;
+        if ($oAccount && $this->checkCanChangePassword($oAccount) && $oAccount->getPassword() === $aArguments['CurrentPassword']) {
             $bPasswordChanged = $this->changePassword($oAccount, $aArguments['NewPassword']);
             $bBreakSubscriptions = true; // break if mail server plugin tries to change password in this account.
         }
