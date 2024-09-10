@@ -34,7 +34,6 @@ class Module extends \Aurora\System\Module\AbstractModule
         $this->subscribeEvent('ChangeAccountPassword', array($this, 'onChangeAccountPassword'));
 
         require_once __DIR__ . '/da_api.php';
-        $this->oDAApi = new \DirectAdminPassAPI($this->oModuleSettings->DirectAdminURL);
     }
 
     /**
@@ -131,18 +130,31 @@ class Module extends \Aurora\System\Module\AbstractModule
     protected function changePassword($oAccount, $sPassword)
     {
         $bResult = false;
-        $sPassCurr = $oAccount->getPassword();
-        if (0 < strlen($sPassCurr) && $sPassCurr !== $sPassword) {
-            $bResult = $this->oDAApi->CMD_CHANGE_EMAIL_PASSWORD(
-                $oAccount->IncomingLogin,
-                $sPassCurr,
-                $sPassword,
-                $sPassword
-            );
-            if (!$bResult) {
-                throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Exceptions\Errs::UserManager_AccountNewPasswordUpdateError);
+
+        $sDomain = \MailSo\Base\Utils::GetDomainFromEmail($oAccount->IncomingLogin);
+        $oServer = false;
+        $aGetMailServerResult = \Aurora\Modules\Mail\Module::Decorator()->GetMailServerByDomain($sDomain, /*AllowWildcardDomain*/false);
+
+        if (!empty($aGetMailServerResult) && isset($aGetMailServerResult['Server'])) {
+
+            $oServer = $aGetMailServerResult['Server'];
+            $sHost = $oServer->getAttributes()['IncomingServer'];
+            
+            $sPassCurr = $oAccount->getPassword();
+            if (0 < strlen($sPassCurr) && $sPassCurr !== $sPassword) {
+                $this->oDAApi = new \DirectAdminPassAPI('https://' . $sHost . ':2222');
+                $bResult = $this->oDAApi->CMD_CHANGE_EMAIL_PASSWORD(
+                    $oAccount->IncomingLogin, $sPassCurr, $sPassword, $sPassword
+                );
+                if (!$bResult) {
+                    throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Exceptions\Errs::UserManager_AccountNewPasswordUpdateError);
+                }
             }
+
+        } else {
+            throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Exceptions\Errs::UserManager_AccountNewPasswordUpdateError);
         }
         return $bResult;
+
     }
 }
