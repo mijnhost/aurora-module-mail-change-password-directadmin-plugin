@@ -89,45 +89,51 @@ class DirectAdminPassAPI
 
         $error = array();
 
-        $fp = @fsockopen($prefix . $this->da['host'], $this->da['port'], $error['number'], $error['string'], 10) ;
-        if (! $fp) {
-            return null ;
-        }
+        if ($command == 'CMD_CHANGE_EMAIL_PASSWORD') {
+            $body = file_get_contents($this->da['scheme'] . '://' . $this->da['host'] . ':'.$this->da['port'].'/' . $command . '?' . $data);
+        } else {
+
+            $fp = @fsockopen($prefix . $this->da['host'], $this->da['port'], $error['number'], $error['string'], 10);
+            if (!$fp) {
+                return null;
+            }
 
 
-        // TODO: Add authorization
+            // TODO: Add authorization
 
-        $http_header = array(
-            $method . ' /' . $command . ((!$post) ? '?' . $data : '') . ' HTTP/1.0',
+            $http_header = array(
+                $method . ' /' . $command . ((!$post) ? '?' . $data : '') . ' HTTP/1.0',
 //            'Authorization: Basic '.base64_encode($this->da['user'].':'.$this->da['pass']),
-            'Host: ' . $this->da['host'],
-            'Content-Type: application/x-www-form-urlencoded',
-            'Content-Length: ' . $content_length,
-            'Connection: close'
-        ) ;
+                'Host: ' . $this->da['host'],
+                'Content-Type: application/x-www-form-urlencoded',
+                'Content-Length: ' . $content_length,
+                'Connection: close'
+            );
 
-        $request = implode("\r\n", $http_header) . "\r\n\r\n" ;
-        fwrite($fp, $request . (($post) ? $data : '')) ;
+            $request = implode("\r\n", $http_header) . "\r\n\r\n";
+            fwrite($fp, $request . (($post) ? $data : ''));
 
-        $returned = '' ;
-        while ($line = @fread($fp, 1024)) {
-            $returned .= $line;
-        }
+            $returned = '';
+            while ($line = @fread($fp, 1024)) {
+                $returned .= $line;
+            }
 
-        fclose($fp);
+            fclose($fp);
 
-        $h = strpos($returned, "\r\n\r\n");
-        $head['all'] = substr($returned, 0, $h);
-        $head['part'] = explode("\r\n", $head['all']);
+            $h = strpos($returned, "\r\n\r\n");
+            $head['all'] = substr($returned, 0, $h);
+            $head['part'] = explode("\r\n", $head['all']);
 
-        /*        foreach ($head['part'] as $response) {
-                    if (preg_match('/^Location:\s+/i' , $response)) {
-                        header($response);
-                        exit;
+            /*        foreach ($head['part'] as $response) {
+                        if (preg_match('/^Location:\s+/i' , $response)) {
+                            header($response);
+                            exit;
+                        }
                     }
-                }
-        */
-        $body = substr($returned, $h + 4); # \r\n\r\n = 4
+            */
+            $body = substr($returned, $h + 4); # \r\n\r\n = 4
+
+        }
 
         return rtrim((string) $body);
     }
